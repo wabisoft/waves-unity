@@ -73,7 +73,6 @@ public class SurfinBoatState : BoatState
 			boatBehavior.ExitState();
 			return;
 		}
-		boatBehavior.rigidbody.velocity = Vector2.zero;
 		var heightOfWave = wave.heightAtX(wave.position.x);
 		var newPos = new Vector3(wave.position.x, heightOfWave, 0);
 		boatBehavior.transform.position = seaBehavior.transform.TransformPoint(newPos);
