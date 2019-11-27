@@ -6,8 +6,7 @@ using UnityEngine;
 public class Wave
 {
 	const float E = 2.71828182845904523536f; // exponential constant
-
-	SeaBehavior seaBehavior;
+	public SeaBehavior seaBehavior;
 	public Wave(SeaBehavior sb, Vector2 pos, float amp, int dir, int a_sign)
 	{
 		seaBehavior = sb;
@@ -110,12 +109,12 @@ public class SeaBehavior : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (Input.GetMouseButtonDown(0))
-		{
-			var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			var localCoordinates = transform.InverseTransformPoint(mousePos);
-			createWave(localCoordinates);
-		}
+		// if (Input.GetMouseButtonDown(0))
+		// {
+		// 	var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		// 	var localCoordinates = transform.InverseTransformPoint(mousePos);
+		// 	createWave(localCoordinates);
+		// }
 		maxHeight = 0.1f;
 		posOfMaxHeight = Vector2.zero;
 		for (int i = 0; i < waves.Count; ++i)
@@ -195,11 +194,12 @@ public class SeaBehavior : MonoBehaviour
 	void OnDrawGizmos()
 	{
 		var halfSize = collider.size / 2;
-		for (float i = -halfSize.x; i < halfSize.x - 0.1f; i += 0.1f)
+		var step = 0.5f;
+		for (float i = -halfSize.x; i < halfSize.x - step; i += step)
 		{
 			Gizmos.color = Color.blue;
 			var p = transform.TransformPoint(new Vector3(i, heightAtX(i), 0));
-			var q = transform.TransformPoint(new Vector3(i + 0.1f, heightAtX(i + 0.1f)));
+			var q = transform.TransformPoint(new Vector3(i + step, heightAtX(i + step)));
 			Gizmos.DrawLine(p, q);
 		}
 	}
