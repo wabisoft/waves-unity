@@ -7,7 +7,6 @@ public class Wave
 {
 	const float E = 2.71828182845904523536f; // exponential constant
 
-	SeaBehavior seaBehavior;
 	public Wave(SeaBehavior sb, Vector2 pos, float amp, int dir, int a_sign)
 	{
 		seaBehavior = sb;
@@ -16,10 +15,11 @@ public class Wave
 		direction = dir;
 		sign = a_sign;
 	}
-	public Vector2 position = new Vector2(0, 0);
+    public SeaBehavior seaBehavior;
+    public Vector2 position = new Vector2(0, 0);
 	public Vector2 velocity = new Vector2(0, 0);
-	float amplitude = 0;
-	float decay = 0;
+	public float amplitude = 0;
+	public float decay = 0;
 	float time = 0;
 	int direction = 1;
 	int sign = 1;
