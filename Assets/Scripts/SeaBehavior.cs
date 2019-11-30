@@ -19,8 +19,8 @@ public class Wave
 	public SeaBehavior seaBehavior;
 	public Vector2 position = new Vector2(0, 0);
 	public Vector2 velocity = new Vector2(0, 0);
-	float amplitude = 0;
-	float decay = 0;
+	public float amplitude = 0;
+	public float decay = 0;
 	float time = 0;
 	int direction = 1;
 	int sign = 1;
