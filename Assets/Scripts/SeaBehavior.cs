@@ -6,7 +6,7 @@ using UnityEngine;
 public class Wave
 {
 	const float E = 2.71828182845904523536f; // exponential constant
-	public SeaBehavior seaBehavior;
+
 	public Wave(SeaBehavior sb, Vector2 pos, float amp, int dir, int a_sign)
 	{
 		seaBehavior = sb;
@@ -15,6 +15,8 @@ public class Wave
 		direction = dir;
 		sign = a_sign;
 	}
+
+	public SeaBehavior seaBehavior;
 	public Vector2 position = new Vector2(0, 0);
 	public Vector2 velocity = new Vector2(0, 0);
 	float amplitude = 0;
@@ -24,6 +26,7 @@ public class Wave
 	int sign = 1;
 	bool grow = true;
 	public bool killme = false;
+
 	public void update(float deltaTime)
 	{
 		time += deltaTime * 0.25f;
@@ -68,6 +71,7 @@ public class Wave
 	{
 		return sign * amplitude * decay * Mathf.Pow(E, -Mathf.Pow(seaBehavior.WaveWidth * (x - position.x), 2));
 	}
+
 	public float slopeAtX(float x)
 	{
 		// derivative of height
