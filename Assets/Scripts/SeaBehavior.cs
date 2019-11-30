@@ -15,8 +15,9 @@ public class Wave
 		direction = dir;
 		sign = a_sign;
 	}
-    public SeaBehavior seaBehavior;
-    public Vector2 position = new Vector2(0, 0);
+
+	public SeaBehavior seaBehavior;
+	public Vector2 position = new Vector2(0, 0);
 	public Vector2 velocity = new Vector2(0, 0);
 	public float amplitude = 0;
 	public float decay = 0;
@@ -25,6 +26,7 @@ public class Wave
 	int sign = 1;
 	bool grow = true;
 	public bool killme = false;
+
 	public void update(float deltaTime)
 	{
 		time += deltaTime * 0.25f;
@@ -69,6 +71,7 @@ public class Wave
 	{
 		return sign * amplitude * decay * Mathf.Pow(E, -Mathf.Pow(seaBehavior.WaveWidth * (x - position.x), 2));
 	}
+
 	public float slopeAtX(float x)
 	{
 		// derivative of height
@@ -110,12 +113,12 @@ public class SeaBehavior : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (Input.GetMouseButtonDown(0))
-		{
-			var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			var localCoordinates = transform.InverseTransformPoint(mousePos);
-			createWave(localCoordinates);
-		}
+		// if (Input.GetMouseButtonDown(0))
+		// {
+		// 	var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		// 	var localCoordinates = transform.InverseTransformPoint(mousePos);
+		// 	createWave(localCoordinates);
+		// }
 		maxHeight = 0.1f;
 		posOfMaxHeight = Vector2.zero;
 		for (int i = 0; i < waves.Count; ++i)
@@ -195,11 +198,12 @@ public class SeaBehavior : MonoBehaviour
 	void OnDrawGizmos()
 	{
 		var halfSize = collider.size / 2;
-		for (float i = -halfSize.x; i < halfSize.x - 0.1f; i += 0.1f)
+		var step = 0.5f;
+		for (float i = -halfSize.x; i < halfSize.x - step; i += step)
 		{
 			Gizmos.color = Color.blue;
 			var p = transform.TransformPoint(new Vector3(i, heightAtX(i), 0));
-			var q = transform.TransformPoint(new Vector3(i + 0.1f, heightAtX(i + 0.1f)));
+			var q = transform.TransformPoint(new Vector3(i + step, heightAtX(i + step)));
 			Gizmos.DrawLine(p, q);
 		}
 	}
