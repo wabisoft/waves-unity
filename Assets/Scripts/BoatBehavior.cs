@@ -90,7 +90,6 @@ public class SurfinBoatState : BoatState
 
 	public override void CheckCollideWithSea(SeaBehavior sb)
 	{
-
 		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
 		var waterLevel = sb.transform.position.y + sb.heightAtX(posRelativeToSea.x);
 		var lower = boatBehavior.transform.position - (Vector3)(boatBehavior.collider.size / 2);
@@ -98,9 +97,7 @@ public class SurfinBoatState : BoatState
 		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
 		var w = boatBehavior.collider.size.x;
 		var displacedWater = h * w;
-
 		var rigidbody = boatBehavior.rigidbody;
-
 		if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
 		{
 			var waterFluidDensity = 50f;
