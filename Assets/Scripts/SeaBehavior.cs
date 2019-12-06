@@ -93,7 +93,7 @@ public class Wave
 public class SeaBehavior : MonoBehaviour
 {
 	public List<Wave> waves = new List<Wave>();
-	public BoxCollider2D collider;
+	public new BoxCollider2D collider;
 	private float maxHeight;
 	public Vector2 posOfMaxHeight = Vector2.zero;
 	public Wave maxHeightWave;
