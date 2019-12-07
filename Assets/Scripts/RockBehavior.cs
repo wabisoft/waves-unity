@@ -6,10 +6,9 @@ public class RockBehavior : MonoBehaviour
 {
 	public Rigidbody2D rigidbody;
 	private bool hitWater = false;
-	private bool mouseDown = false;
 	private Vector2 throwStartPos, throwEndPos;
 	private float throwStartTime, throwEndTime, throwTimeInterval;
-	// Start is called before the first frame update
+	// Start is called before the first frame Update
 	[Range(0.05f, 1f)]
 	public float throwForce = 0.05f;
 	void Start()
@@ -79,7 +78,7 @@ public class RockBehavior : MonoBehaviour
 	{
 		if (other.gameObject.tag == "Sea" && !hitWater)
 		{
-			other.GetComponent<SeaBehavior>().createWave(other.gameObject.transform.InverseTransformPoint(transform.position));
+			other.GetComponent<SeaBehavior>().CreateWave(other.gameObject.transform.InverseTransformPoint(transform.position));
 			// Destroy(this);
 			hitWater = true;
 			// Destroy(this, 3);
