@@ -81,7 +81,7 @@ public class RockBehavior : MonoBehaviour
 			other.GetComponent<SeaBehavior>().CreateWave(other.gameObject.transform.InverseTransformPoint(transform.position));
 			// Destroy(this);
 			hitWater = true;
-			// Destroy(this, 3);
+			Destroy(this, 3);
 		}
 		if (other.gameObject.tag == "Boat")
 		{
