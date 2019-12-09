@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: wave
-  m_Shader: {fileID: 4800000, guid: 338be1eec00a5f1459d5ab6f3e221b23, type: 3}
+  m_Name: Unlit_spriteAlphaCorrection
+  m_Shader: {fileID: 4800000, guid: ecbfc3e98a0996a44a63f04e34bbb59e, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -18,15 +18,11 @@ Material:
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 3078cb2ff7501443a993d72f53a3e6ce, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Amplitudes: 0
-    - _Mouse: 0
-    - _TestValue: -3.5
-    - _seaHeight: -3.5
-    - _test: 0.8
-    - _wavePositions: 0
-    - _waveTimer: 0
-    m_Colors:
-    - _seaHeight: {r: 0, g: 3.02, b: 0, a: 1}
-    - seaHeight: {r: 0, g: -3.5, b: 0, a: 0}
+    - _BlahBlah: 0.99
+    m_Colors: []
