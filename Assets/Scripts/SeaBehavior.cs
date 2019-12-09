@@ -7,13 +7,13 @@ public class Wave
 {
 	const float E = 2.71828182845904523536f; // exponential constant
 
-	public Wave(SeaBehavior sb, Vector2 pos, float amp, int dir, int a_sign)
+	public Wave(SeaBehavior sb, Vector2 pos, float amp, int dir, int s)
 	{
 		seaBehavior = sb;
 		position = pos;
 		amplitude = amp;
 		direction = dir;
-		sign = a_sign;
+		sign = s;
 	}
 
 	public SeaBehavior seaBehavior;
@@ -175,20 +175,21 @@ public class SeaBehavior : MonoBehaviour
 		return velocity;
 	}
 
-	public void CreateWave(Vector2 position)
+	public void CreateWave(Vector2 position, float amplitude, int direction, int sign)
 	{
-		waves.Add(new Wave(this, position, 4, 1, 1));
+		waves.Add(new Wave(this, position, amplitude, direction, sign));
 	}
+
     void OnTriggerEnter2D(Collider2D collider)
     {
         var boat = collider.gameObject.GetComponent<BoatBehavior>();
-        if(boat != null) { boat.CheckCollideWithSea(this); }
+        if(boat != null) { boat.CollideSea(this); }
     }
 
     void OnTriggerStay2D(Collider2D collider)
     {
         var boat = collider.gameObject.GetComponent<BoatBehavior>();
-        if(boat != null) { boat.CheckCollideWithSea(this); }
+        if(boat != null) { boat.CollideSea(this); }
     }
 
     /// <summary>
