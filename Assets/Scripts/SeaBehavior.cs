@@ -21,15 +21,13 @@ public class Wave
 	public Vector2 velocity = new Vector2(0, 0);
 	public float amplitude = 0;
 	public float decay = 0;
-	float time = 0;
 	int direction = 1;
 	int sign = 1;
 	bool grow = true;
 	public bool killme = false;
 
-	public void update(float deltaTime)
+	public void Update(float deltaTime)
 	{
-		time += deltaTime * 0.25f;
 		if (decay >= 1)
 		{
 			grow = false;
@@ -57,33 +55,33 @@ public class Wave
 		position += (float)direction * velocity;
 	}
 
-	public float minimumX()
+	public float MinimumX()
 	{
-		return position.x - 2.3f * (1 / seaBehavior.WaveWidth); // solve for heightAtX == 0
+		return position.x - 2.3f * (1 / seaBehavior.WaveWidth); // solve for HeightAtX == 0
 	}
 
-	public float maximumX()
+	public float MaximumX()
 	{
 		return position.x + 2.3f * (1 / seaBehavior.WaveWidth);
 	}
 
-	public float heightAtX(float x)
+	public float HeightAtX(float x)
 	{
 		return sign * amplitude * decay * Mathf.Pow(E, -Mathf.Pow(seaBehavior.WaveWidth * (x - position.x), 2));
 	}
 
-	public float slopeAtX(float x)
+	public float SlopeAtX(float x)
 	{
 		// derivative of height
-		return heightAtX(x) * (-2 * seaBehavior.WaveWidth * (x - position.x) * seaBehavior.WaveWidth);
+		return HeightAtX(x) * (-2 * seaBehavior.WaveWidth * (x - position.x) * seaBehavior.WaveWidth);
 	}
 
-	public Vector2 velocityAtX(float x)
+	public Vector2 VelocityAtX(float x)
 	{
 		float distFromMid = Mathf.Abs(x - position.x);
-		float max = maximumX();
+		float max = MaximumX();
 		if (max < x) { return Vector2.zero; }
-		float min = minimumX();
+		float min = MinimumX();
 		if (min > x) { return Vector2.zero; }
 		float halfLength = (max - min) / 2.0f;
 		return ((halfLength - distFromMid) / halfLength) * direction * velocity;
@@ -93,7 +91,7 @@ public class Wave
 public class SeaBehavior : MonoBehaviour
 {
 	public List<Wave> waves = new List<Wave>();
-	public BoxCollider2D collider;
+	public new BoxCollider2D collider;
 	private float maxHeight;
 	public Vector2 posOfMaxHeight = Vector2.zero;
 	public Wave maxHeightWave;
@@ -101,35 +99,29 @@ public class SeaBehavior : MonoBehaviour
 	public float growFactor = 1;
 	public float decayFactor = -0.25f;
 
-
-	/// <summary>
-	/// Start is called on the frame when a script is enabled just before
-	/// any of the Update methods is called the first time.
-	/// </summary>
 	void Start()
 	{
 	}
 
-	// Update is called once per frame
 	void Update()
 	{
 		// if (Input.GetMouseButtonDown(0))
 		// {
 		// 	var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		// 	var localCoordinates = transform.InverseTransformPoint(mousePos);
-		// 	createWave(localCoordinates);
+		// 	CreateWave(localCoordinates);
 		// }
-		maxHeight = 0.1f;
+		maxHeight = 0.2f;
 		posOfMaxHeight = Vector2.zero;
 		for (int i = 0; i < waves.Count; ++i)
 		{
-			waves[i].update(Time.deltaTime);
+			waves[i].Update(Time.deltaTime);
 			if (waves[i].killme)
 			{
 				waves.RemoveAt(i);
 				continue;
 			}
-			var heightAtWavePos = heightAtX(waves[i].position.x);
+			var heightAtWavePos = HeightAtX(waves[i].position.x);
 			if (maxHeight < heightAtWavePos)
 			{
 				maxHeight = heightAtWavePos;
@@ -144,66 +136,73 @@ public class SeaBehavior : MonoBehaviour
 		collider.offset = new Vector2(collider.offset.x, maxHeight / 2);
 	}
 
-	/// <summary>
-	/// LateUpdate is called every frame, if the Behaviour is enabled.
-	/// It is called after all Update functions have been called.
-	/// </summary>
 	void LateUpdate()
 	{
 		var size = collider.size;
-		var halfSize = size / 2.0f;
+		// var halfSize = size / 2.0f;
 		size.y = maxHeight;
 		collider.size = size;
 		collider.offset = new Vector2(collider.offset.x, maxHeight / 2);
 	}
 
-	public float heightAtX(float x)
+	public float HeightAtX(float x)
 	{
 		float height = 0f;
 		foreach (var wave in waves)
 		{
-			height += wave.heightAtX(x);
+			height += wave.HeightAtX(x);
 		}
 		return height;
 	}
 
-	public float slopeAtX(float x)
+	public float SlopeAtX(float x)
 	{
 		float slope = 0;
 		foreach (var wave in waves)
 		{
-			slope += wave.slopeAtX(x);
+			slope += wave.SlopeAtX(x);
 		}
 		return slope;
 	}
 
-	public Vector2 velocityAtX(float x)
+	public Vector2 VelocityAtX(float x)
 	{
 		Vector2 velocity = Vector2.zero;
 		foreach (Wave wave in waves)
 		{
-			velocity += wave.velocityAtX(x);
+			velocity += wave.VelocityAtX(x);
 		}
 		return velocity;
 	}
 
-	public void createWave(Vector2 position)
+	public void CreateWave(Vector2 position)
 	{
 		waves.Add(new Wave(this, position, 4, 1, 1));
 	}
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        var boat = collider.gameObject.GetComponent<BoatBehavior>();
+        if(boat != null) { boat.CheckCollideWithSea(this); }
+    }
 
-	/// <summary>
-	/// Callback to draw gizmos that are pickable and always drawn.
-	/// </summary>
-	void OnDrawGizmos()
+    void OnTriggerStay2D(Collider2D collider)
+    {
+        var boat = collider.gameObject.GetComponent<BoatBehavior>();
+        if(boat != null) { boat.CheckCollideWithSea(this); }
+    }
+
+    /// <summary>
+    /// Callback to draw gizmos that are pickable and always drawn.
+    /// </summary>
+    void OnDrawGizmos()
 	{
 		var halfSize = collider.size / 2;
 		var step = 0.5f;
 		for (float i = -halfSize.x; i < halfSize.x - step; i += step)
 		{
 			Gizmos.color = Color.blue;
-			var p = transform.TransformPoint(new Vector3(i, heightAtX(i), 0));
-			var q = transform.TransformPoint(new Vector3(i + step, heightAtX(i + step)));
+			var p = transform.TransformPoint(new Vector3(i, HeightAtX(i), 0));
+			var q = transform.TransformPoint(new Vector3(i + step, HeightAtX(i + step)));
 			Gizmos.DrawLine(p, q);
 		}
 	}
