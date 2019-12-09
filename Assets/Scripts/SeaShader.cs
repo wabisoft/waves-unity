@@ -3,21 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public struct WaveShaderData
-{
-    public WaveShaderData(Wave wave)
-    {
-        amp = wave.amplitude;
-        position = wave.seaBehavior.transform.TransformPoint(wave.position);
-        width = wave.seaBehavior.WaveWidth;
-        decay = wave.decay;
-    }
-    public float width;
-    public float amp;
-    public Vector3 position;
-    public float decay;
-}
-
 public class SeaShader : MonoBehaviour
 {
     public SeaBehavior seaBehavior;
@@ -29,8 +14,7 @@ public class SeaShader : MonoBehaviour
     void Awake()
     {
         //
-        GameObject sea = GameObject.FindWithTag("Sea");
-        mat.SetFloat("_seaHeight", sea.transform.position.y);
+        mat.SetFloat("_seaHeight", seaBehavior.transform.position.y);
         // to draw at first frame:
         mat.SetFloat("_quadSizeX", gameObject.transform.localScale.x / 2.0f);
         mat.SetFloat("_quadSizeY", gameObject.transform.localScale.y / 2.0f);
@@ -55,13 +39,25 @@ public class SeaShader : MonoBehaviour
         { 
             return;
         }
+        var waveAmps = new float[seaBehavior.waves.Count];
+        var waveSigns = new float[seaBehavior.waves.Count];
+        var waveWidths = new float[seaBehavior.waves.Count];
+        var waveDecays = new float[seaBehavior.waves.Count];
+        var wavePosXs = new float[seaBehavior.waves.Count];
+        var wavePosYs = new float[seaBehavior.waves.Count];
+        // This is probably worth doing (the other way we iterate the waves n+1 times where n is the number shader attributes we end up with
+        for (int i = 0; i < seaBehavior.waves.Count; ++i)
+        {
+            Wave wave = seaBehavior.waves[i];
+            waveAmps[i] = wave.amplitude;
+            waveSigns[i] = wave.sign;
+            waveWidths[i] = seaBehavior.WaveWidth; // one less indirection(this probably won't stay like this so w/e)
+            waveDecays[i] = wave.decay;
+            var waveWorldPosition = seaBehavior.transform.TransformPoint(wave.position);
+            wavePosXs[i] = waveWorldPosition.x;
+            wavePosYs[i] = waveWorldPosition.y;
 
-        var WaveData = seaBehavior.waves.Select(w => new WaveShaderData(w));
-        var waveAmps = WaveData.Select(w => w.amp).ToList();
-        var waveWidths = WaveData.Select(w => w.width).ToList();
-        var wavePosXs = WaveData.Select(w => w.position.x).ToList();
-        var wavePosYs = WaveData.Select(w => w.position.y).ToList();
-        var waveDecays = WaveData.Select(w => w.decay).ToList();
+        }
 
         //
         mat.SetFloat("_quadPosY", gameObject.transform.position.y); // to change origin for correction function
@@ -69,9 +65,10 @@ public class SeaShader : MonoBehaviour
         mat.SetFloat("_quadSizeX", gameObject.transform.localScale.x / 2.0f); // to transform to NDC space
         mat.SetFloat("_quadSizeY", gameObject.transform.localScale.y / 2.0f);
         //
-        mat.SetFloat("_NumWaves", WaveData.Count());
+        mat.SetFloat("_NumWaves", seaBehavior.waves.Count);
         mat.SetFloatArray("_WaveWidths", waveWidths);
         mat.SetFloatArray("_WaveAmps", waveAmps);
+        mat.SetFloatArray("_WaveSigns", waveSigns);
         mat.SetFloatArray("_WaveDecays", waveDecays);
         mat.SetFloatArray("_WaveXPositions", wavePosXs);
         mat.SetFloatArray("_WaveYPositions", wavePosYs);

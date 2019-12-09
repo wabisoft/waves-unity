@@ -21,8 +21,8 @@ public class Wave
 	public Vector2 velocity = new Vector2(0, 0);
 	public float amplitude = 0;
 	public float decay = 0;
+	public int sign = 1;
 	int direction = 1;
-	int sign = 1;
 	bool grow = true;
 	public bool killme = false;
 
