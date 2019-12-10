@@ -46,6 +46,7 @@
 			float _WaveXPositions[25];
 			float _WaveWidths[25];
 			float _WaveDecays[25];
+			float _WaveSigns[25];
 			//
 			float _seaHeight;
 			float _NumWaves;
@@ -66,7 +67,7 @@
 				
 				for (int i = 0; i < _NumWaves; i++)
 				{
-					function += _WaveAmps[i] / _quadSizeY * _WaveDecays[i] * exp(-1. * pow(_WaveWidths[i] * _quadSizeX * (uv.x - (_WaveXPositions[i] - _quadPosX)/ _quadSizeX), 2.));
+					function += _WaveSigns[i] * _WaveAmps[i] / _quadSizeY * _WaveDecays[i] * exp(-1. * pow(_WaveWidths[i] * _quadSizeX * (uv.x - (_WaveXPositions[i] - _quadPosX)/ _quadSizeX), 2.));
 				}
 				float val = (1. - smoothstep(function, function + 0.015, uv.y))
 					      - (1. - smoothstep(function - 0.015, function, uv.y));
