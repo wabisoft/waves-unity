@@ -25,5 +25,5 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _blah: 2
-    - _seaHeight: -3.5
+    - _seaHeight: -2.98
     m_Colors: []
