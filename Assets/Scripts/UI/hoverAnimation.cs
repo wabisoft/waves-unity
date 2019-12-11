@@ -18,7 +18,7 @@ public class hoverAnimation : MonoBehaviour
     }
     private IEnumerator restartAnimationCoroutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(0.02f);
+        WaitForSeconds wait = new WaitForSeconds(0.03f);
 
         int numSteps = 20;
         float stepSize = 1f / (float)numSteps;
