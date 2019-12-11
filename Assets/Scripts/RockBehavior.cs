@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class RockBehavior : MonoBehaviour
 {
-	public Rigidbody2D rigidbody;
+    public bool isNegative = false;
+	public new Rigidbody2D rigidbody;
 	private bool hitWater = false;
-	private bool mouseDown = false;
-	private Vector3 mouseStartPos = Vector2.zero;
-	// Start is called before the first frame update
+	private Vector2 throwStartPos, throwEndPos;
+	private float throwStartTime, throwEndTime, throwTimeInterval;
+	// Start is called before the first frame Update
+	[Range(0.05f, 1f)]
+	public float throwForce = 0.05f;
 	void Start()
 	{
 		if (rigidbody == null)
@@ -35,9 +38,10 @@ public class RockBehavior : MonoBehaviour
 	/// </summary>
 	void OnMouseDown()
 	{
-		mouseDown = true;
-		mouseStartPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		rigidbody.isKinematic = true;
+		throwStartTime = Time.time;
+		// throwStartPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		throwStartPos = Input.mousePosition;
 	}
 
 	/// <summary>
@@ -46,8 +50,8 @@ public class RockBehavior : MonoBehaviour
 	/// </summary>
 	void OnMouseDrag()
 	{
-		var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		rigidbody.MovePosition(mousePos);
+		// var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		// rigidbody.MovePosition(mousePos);
 	}
 
 
@@ -56,11 +60,14 @@ public class RockBehavior : MonoBehaviour
 	/// </summary>
 	void OnMouseUp()
 	{
+		// var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		rigidbody.isKinematic = false;
-		mouseDown = false;
-		var mouseEndPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		var relpos = mouseEndPos - mouseStartPos;
-		rigidbody.AddForce(relpos, ForceMode2D.Impulse);
+		throwEndTime = Time.time;
+		throwTimeInterval = throwEndTime - throwStartTime;
+		throwEndPos = Input.mousePosition;
+		var direction = throwEndPos - throwStartPos;
+		rigidbody.AddForce((direction / throwTimeInterval) * throwForce);
+
 	}
 
 	/// <summary>
@@ -72,10 +79,9 @@ public class RockBehavior : MonoBehaviour
 	{
 		if (other.gameObject.tag == "Sea" && !hitWater)
 		{
-			other.GetComponent<SeaBehavior>().createWave(other.gameObject.transform.InverseTransformPoint(transform.position));
-			// Destroy(this);
+			other.GetComponent<SeaBehavior>().CreateWave(other.gameObject.transform.InverseTransformPoint(transform.position), rigidbody.velocity.magnitude, (int)Mathf.Sign(rigidbody.velocity.x), (isNegative)? -1 : 1);
 			hitWater = true;
-			// Destroy(this, 3);
+			Destroy(this, 3);
 		}
 		if (other.gameObject.tag == "Boat")
 		{

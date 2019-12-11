@@ -14,7 +14,24 @@ public abstract class BoatState
 	public virtual void Enter() { }
 	public virtual void Exit() { }
 	public abstract void FixedUpdate();
-	public abstract void CheckCollideWithSea(SeaBehavior sb);
+	public virtual void CollideSea(SeaBehavior sb)
+    {
+		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
+		var waterLevel = sb.transform.position.y + sb.HeightAtX(posRelativeToSea.x);
+		var lower = boatBehavior.transform.position - (Vector3)(boatBehavior.collider.size / 2);
+		if (lower.y > waterLevel) { return; }
+		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
+		var w = boatBehavior.collider.size.x;
+		var displacedWater = h * w;
+		var rigidbody = boatBehavior.rigidbody;
+		if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
+		{
+			var waterFluidDensity = 100f;
+			var bouyancy = displacedWater * waterFluidDensity * -Physics2D.gravity * Time.deltaTime;
+			rigidbody.AddForce(bouyancy, ForceMode2D.Impulse);
+			rigidbody.velocity *= 0.75f;
+		}
+    }
 }
 
 
@@ -22,39 +39,54 @@ public class DefaultBoatState : BoatState
 {
 	public DefaultBoatState(BoatBehavior bb) : base(bb) { }
 
+    public override void Enter()
+    {
+        Debug.Log("Humdrumb. Default...");
+    }
+
 	public override void FixedUpdate()
 	{
 		// Do nothing extra?
 	}
 
-	public override void CheckCollideWithSea(SeaBehavior sb)
-	{
+    public override void CollideSea(SeaBehavior sb)
+    {
+        base.CollideSea(sb);
+        boatBehavior.EnterState(new SailingBoatState(boatBehavior, sb));
+    }
+}
+
+public class SailingBoatState : BoatState
+{
+    public SeaBehavior seaBehavior;
+
+    public SailingBoatState(BoatBehavior bb, SeaBehavior sb): base(bb) {
+        seaBehavior = sb;
+    }
+
+    public override void Enter()
+    {
+        Debug.Log("Ahoy! Sailing, Matey!");
+    }
+
+    public override void CollideSea(SeaBehavior sb)
+    {
+        base.CollideSea(sb);
 		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
-		var waterLevel = sb.transform.position.y + sb.heightAtX(posRelativeToSea.x);
-		var lower = boatBehavior.transform.position - (Vector3)(boatBehavior.collider.size / 2);
-		if (lower.y > waterLevel) { return; }
-		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
-		var w = boatBehavior.collider.size.x;
-		var displacedWater = h * w;
+        var seaVel = sb.VelocityAtX(posRelativeToSea.x);
+        boatBehavior.rigidbody.velocity += seaVel;
+        var distFromMax = Mathf.Abs(posRelativeToSea.x - sb.posOfMaxHeight.x);
+        if (distFromMax <= 0.5f && sb.maxHeightWave != null)
+        {
+            boatBehavior.ExitState();
+            boatBehavior.EnterState(new SurfinBoatState(boatBehavior, sb, sb.maxHeightWave));
+        }
+    }
 
-		var rigidbody = boatBehavior.rigidbody;
-
-		if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
-		{
-			var waterFluidDensity = 50f;
-			var bouyancy = displacedWater * waterFluidDensity * -Physics2D.gravity * Time.deltaTime;
-			rigidbody.AddForce(bouyancy, ForceMode2D.Impulse);
-			rigidbody.velocity *= 0.75f;
-
-		}
-		var seaVel = sb.velocityAtX(posRelativeToSea.x);
-		rigidbody.velocity += seaVel;
-		var distFromMax = Mathf.Abs(posRelativeToSea.x - sb.posOfMaxHeight.x);
-		if (distFromMax <= 0.5f && sb.maxHeightWave != null)
-		{
-			boatBehavior.EnterState(new SurfinBoatState(boatBehavior, sb, sb.maxHeightWave));
-		}
-	}
+    public override void FixedUpdate()
+    {
+        CollideSea(seaBehavior);
+    }
 }
 
 public class SurfinBoatState : BoatState
@@ -77,52 +109,42 @@ public class SurfinBoatState : BoatState
 			return;
 		}
 		var posRelativeToSea = seaBehavior.transform.InverseTransformPoint(boatBehavior.transform.position);
-		if ((posRelativeToSea.x - wave.position.x) > 1)
+        var diff = posRelativeToSea - (Vector3)wave.position;
+		if (Mathf.Abs(diff.x) > 0.5)
 		{
 			boatBehavior.ExitState();
 			return;
 		}
-		var heightOfWave = seaBehavior.heightAtX(wave.position.x);
+		var heightOfWave = seaBehavior.HeightAtX(wave.position.x);
 		var newPos = new Vector3(wave.position.x, heightOfWave, 0);
 		var relPos = newPos - posRelativeToSea;
-		boatBehavior.transform.Translate(relPos * 0.5f);
+        boatBehavior.rigidbody.velocity = new Vector2(wave.velocity.x, boatBehavior.rigidbody.velocity.y);
+        boatBehavior.rigidbody.MovePosition(boatBehavior.transform.position + relPos);
+		// boatBehavior.transform.Translate(relPos * 0.5f);
 	}
 
-	public override void CheckCollideWithSea(SeaBehavior sb)
+	public override void CollideSea(SeaBehavior sb)
 	{
-
-		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
-		var waterLevel = sb.transform.position.y + sb.heightAtX(posRelativeToSea.x);
-		var lower = boatBehavior.transform.position - (Vector3)(boatBehavior.collider.size / 2);
-		if (lower.y > waterLevel) { return; }
-		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
-		var w = boatBehavior.collider.size.x;
-		var displacedWater = h * w;
-
-		var rigidbody = boatBehavior.rigidbody;
-
-		if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
-		{
-			var waterFluidDensity = 50f;
-			var bouyancy = displacedWater * waterFluidDensity * -Physics2D.gravity * Time.deltaTime;
-			rigidbody.AddForce(bouyancy, ForceMode2D.Impulse);
-			rigidbody.velocity *= 0.75f;
-
-		}
-		var seaVel = sb.velocityAtX(posRelativeToSea.x);
-		rigidbody.velocity += seaVel * 5;
+        base.CollideSea(sb);
+        var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
+		var seaVel = sb.VelocityAtX(posRelativeToSea.x);
+		boatBehavior.rigidbody.velocity += seaVel * 5;
 	}
 }
 
 public class BoatBehavior : MonoBehaviour
 {
-	public BoxCollider2D collider;
-	public Rigidbody2D rigidbody;
+	public new BoxCollider2D collider;
+	public new Rigidbody2D rigidbody;
 
 	public Stack<BoatState> states = new Stack<BoatState>();
 
 	public void EnterState(BoatState boatState)
 	{
+        if (states.Count > 0)
+        {
+            states.Peek().Exit();
+        }
 		boatState.Enter();
 		states.Push(boatState);
 	}
@@ -130,41 +152,25 @@ public class BoatBehavior : MonoBehaviour
 	public void ExitState()
 	{
 		states.Pop().Exit();
+        states.Peek().Enter();
 	}
 
-	// Start is called before the first frame update
+	// Start is called before the first frame Update
 	void Start()
 	{
 		collider = GetComponent<BoxCollider2D>();
 		rigidbody = GetComponent<Rigidbody2D>();
-		// Time.timeScale = 0.125f;
 		EnterState(new DefaultBoatState(this));
 	}
 
-	// Update is called once per frame
 	void FixedUpdate()
 	{
-		var seas = GameObject.FindGameObjectsWithTag("Sea");
-		foreach (var g in seas)
-		{
-			states.Peek().CheckCollideWithSea(g.GetComponent<SeaBehavior>());
-		}
 		states.Peek().FixedUpdate();
 	}
 
-	/// <summary>
-	/// Sent when an incoming collider makes contact with this object's
-	/// collider (2D physics only).
-	/// </summary>
-	/// <param name="other">The Collision2D data associated with this collision.</param>
-	void CheckCollideWithSea(SeaBehavior sb)
+    public void CollideSea(SeaBehavior sb)
 	{
-
+        if(sb == null) { return; }
+        states.Peek().CollideSea(sb);
 	}
-
-	public float sign(float t)
-	{
-		return t / Mathf.Abs(t);
-	}
-
 }
