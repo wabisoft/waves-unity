@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class RockBehavior : MonoBehaviour
 {
-	public Rigidbody2D rigidbody;
+    public bool isNegative = false;
+	public new Rigidbody2D rigidbody;
 	private bool hitWater = false;
 	private Vector2 throwStartPos, throwEndPos;
 	private float throwStartTime, throwEndTime, throwTimeInterval;
@@ -78,8 +79,7 @@ public class RockBehavior : MonoBehaviour
 	{
 		if (other.gameObject.tag == "Sea" && !hitWater)
 		{
-			other.GetComponent<SeaBehavior>().CreateWave(other.gameObject.transform.InverseTransformPoint(transform.position));
-			// Destroy(this);
+			other.GetComponent<SeaBehavior>().CreateWave(other.gameObject.transform.InverseTransformPoint(transform.position), rigidbody.velocity.magnitude, (int)Mathf.Sign(rigidbody.velocity.x), (isNegative)? -1 : 1);
 			hitWater = true;
 			Destroy(this, 3);
 		}
