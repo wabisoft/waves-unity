@@ -39,6 +39,11 @@ public class DefaultBoatState : BoatState
 {
 	public DefaultBoatState(BoatBehavior bb) : base(bb) { }
 
+    public override void Enter()
+    {
+        Debug.Log("Humdrumb. Default...");
+    }
+
 	public override void FixedUpdate()
 	{
 		// Do nothing extra?
@@ -59,6 +64,11 @@ public class SailingBoatState : BoatState
         seaBehavior = sb;
     }
 
+    public override void Enter()
+    {
+        Debug.Log("Ahoy! Sailing, Matey!");
+    }
+
     public override void CollideSea(SeaBehavior sb)
     {
         base.CollideSea(sb);
@@ -68,6 +78,7 @@ public class SailingBoatState : BoatState
         var distFromMax = Mathf.Abs(posRelativeToSea.x - sb.posOfMaxHeight.x);
         if (distFromMax <= 0.5f && sb.maxHeightWave != null)
         {
+            boatBehavior.ExitState();
             boatBehavior.EnterState(new SurfinBoatState(boatBehavior, sb, sb.maxHeightWave));
         }
     }
@@ -98,7 +109,8 @@ public class SurfinBoatState : BoatState
 			return;
 		}
 		var posRelativeToSea = seaBehavior.transform.InverseTransformPoint(boatBehavior.transform.position);
-		if ((posRelativeToSea.x - wave.position.x) > 1)
+        var diff = posRelativeToSea - (Vector3)wave.position;
+		if (Mathf.Abs(diff.x) > 0.5)
 		{
 			boatBehavior.ExitState();
 			return;
@@ -106,7 +118,9 @@ public class SurfinBoatState : BoatState
 		var heightOfWave = seaBehavior.HeightAtX(wave.position.x);
 		var newPos = new Vector3(wave.position.x, heightOfWave, 0);
 		var relPos = newPos - posRelativeToSea;
-		boatBehavior.transform.Translate(relPos * 0.5f);
+        boatBehavior.rigidbody.velocity = new Vector2(wave.velocity.x, boatBehavior.rigidbody.velocity.y);
+        boatBehavior.rigidbody.MovePosition(boatBehavior.transform.position + relPos);
+		// boatBehavior.transform.Translate(relPos * 0.5f);
 	}
 
 	public override void CollideSea(SeaBehavior sb)
@@ -127,6 +141,10 @@ public class BoatBehavior : MonoBehaviour
 
 	public void EnterState(BoatState boatState)
 	{
+        if (states.Count > 0)
+        {
+            states.Peek().Exit();
+        }
 		boatState.Enter();
 		states.Push(boatState);
 	}
@@ -134,6 +152,7 @@ public class BoatBehavior : MonoBehaviour
 	public void ExitState()
 	{
 		states.Pop().Exit();
+        states.Peek().Enter();
 	}
 
 	// Start is called before the first frame Update
