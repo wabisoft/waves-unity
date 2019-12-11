@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_waveBlah
-  m_Shader: {fileID: 4800000, guid: 7684e4ce09373c54f8eb6aba070767e5, type: 3}
+  m_Name: platformMat
+  m_Shader: {fileID: 4800000, guid: ecbfc3e98a0996a44a63f04e34bbb59e, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -20,10 +20,9 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 637d5bfcc15954184a922155c2405c61, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _blah: 2
-    - _seaHeight: -2.98
+    - _BlahBlah: 1
     m_Colors: []
