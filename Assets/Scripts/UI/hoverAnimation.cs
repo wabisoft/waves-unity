@@ -18,12 +18,23 @@ public class hoverAnimation : MonoBehaviour
     }
     private IEnumerator restartAnimationCoroutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(0.05f);
+        WaitForSeconds wait = new WaitForSeconds(0.02f);
 
-        for (int i = 0; i < 4; i++)
+        int numSteps = 20;
+        float stepSize = 1f / (float)numSteps;
+        float tt = 0;
+        float easingFunction, rotationVal;
+
+        for (int i = 0; i < numSteps; i++)
         {
-            rt.localRotation = Quaternion.Euler(rt.localRotation.x, rt.localRotation.y, rt.localRotation.z + i * 20.0f);
+            easingFunction = -5f * Mathf.Sin(Mathf.PI * (tt - 1f));
+            rotationVal = easingFunction * 5f; // base
+            rt.localScale = new Vector3(1f + 0.3f * easingFunction, 1f + 0.3f * easingFunction);
+            rt.localRotation = Quaternion.Euler(rt.localRotation.x, rt.localRotation.y, rt.localRotation.z + rotationVal);
+            tt += stepSize;
             yield return wait;
         }
+        rt.localScale = new Vector3(1f, 1f);
+        rt.localRotation = Quaternion.Euler(rt.localRotation.x, rt.localRotation.y, 0f);
     }
 }
