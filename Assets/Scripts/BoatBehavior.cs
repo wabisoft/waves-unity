@@ -18,7 +18,7 @@ public abstract class BoatState
     {
 		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
 		var waterLevel = sb.transform.position.y + sb.HeightAtX(posRelativeToSea.x);
-		var lower = boatBehavior.transform.position - (Vector3)(boatBehavior.collider.size / 2);
+        var lower = boatBehavior.transform.position - (Vector3)boatBehavior.halfSize;
 		if (lower.y > waterLevel) { return; }
 		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
 		var w = boatBehavior.collider.size.x;
@@ -26,7 +26,7 @@ public abstract class BoatState
 		var rigidbody = boatBehavior.rigidbody;
 		if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
 		{
-			var waterFluidDensity = 100f;
+			var waterFluidDensity = 50f;
 			var bouyancy = displacedWater * waterFluidDensity * -Physics2D.gravity * Time.deltaTime;
 			rigidbody.AddForce(bouyancy, ForceMode2D.Impulse);
 			rigidbody.velocity *= 0.75f;
@@ -116,11 +116,10 @@ public class SurfinBoatState : BoatState
 			return;
 		}
 		var heightOfWave = seaBehavior.HeightAtX(wave.position.x);
-		var newPos = new Vector3(wave.position.x, heightOfWave, 0);
+		var newPos = new Vector3(wave.position.x, heightOfWave+boatBehavior.halfSize.y, 0);
 		var relPos = newPos - posRelativeToSea;
-        boatBehavior.rigidbody.velocity = new Vector2(wave.velocity.x, boatBehavior.rigidbody.velocity.y);
+        // boatBehavior.rigidbody.velocity = new Vector2(wave.velocity.x, boatBehavior.rigidbody.velocity.y);
         boatBehavior.rigidbody.MovePosition(boatBehavior.transform.position + relPos);
-		// boatBehavior.transform.Translate(relPos * 0.5f);
 	}
 
 	public override void CollideSea(SeaBehavior sb)
@@ -136,6 +135,8 @@ public class BoatBehavior : MonoBehaviour
 {
 	public new BoxCollider2D collider;
 	public new Rigidbody2D rigidbody;
+    public Vector2 size;
+    public Vector2 halfSize;
 
 	public Stack<BoatState> states = new Stack<BoatState>();
 
@@ -161,7 +162,9 @@ public class BoatBehavior : MonoBehaviour
 		collider = GetComponent<BoxCollider2D>();
 		rigidbody = GetComponent<Rigidbody2D>();
 		EnterState(new DefaultBoatState(this));
-	}
+        size = collider.size * transform.localScale;
+        halfSize = size / 2;
+    }
 
 	void FixedUpdate()
 	{

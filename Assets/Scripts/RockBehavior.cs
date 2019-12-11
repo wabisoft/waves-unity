@@ -32,35 +32,15 @@ public class RockBehavior : MonoBehaviour
 		// }
 	}
 
-	/// <summary>
-	/// OnMouseDown is called when the user has pressed the mouse button while
-	/// over the GUIElement or Collider.
-	/// </summary>
 	void OnMouseDown()
 	{
 		rigidbody.isKinematic = true;
 		throwStartTime = Time.time;
-		// throwStartPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		throwStartPos = Input.mousePosition;
 	}
 
-	/// <summary>
-	/// OnMouseDrag is called when the user has clicked on a GUIElement or Collider
-	/// and is still holding down the mouse.
-	/// </summary>
-	void OnMouseDrag()
-	{
-		// var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		// rigidbody.MovePosition(mousePos);
-	}
-
-
-	/// <summary>
-	/// OnMouseUp is called when the user has released the mouse button.
-	/// </summary>
 	void OnMouseUp()
 	{
-		// var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		rigidbody.isKinematic = false;
 		throwEndTime = Time.time;
 		throwTimeInterval = throwEndTime - throwStartTime;
@@ -70,18 +50,15 @@ public class RockBehavior : MonoBehaviour
 
 	}
 
-	/// <summary>
-	/// Sent when another object enters a trigger collider attached to this
-	/// object (2D physics only).
-	/// </summary>
-	/// <param name="other">The other Collider2D involved in this collision.</param>
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.tag == "Sea" && !hitWater)
 		{
 			other.GetComponent<SeaBehavior>().CreateWave(other.gameObject.transform.InverseTransformPoint(transform.position), rigidbody.velocity.magnitude, (int)Mathf.Sign(rigidbody.velocity.x), (isNegative)? -1 : 1);
 			hitWater = true;
-			Destroy(this, 3);
+            rigidbody.drag += 3;
+            rigidbody.angularDrag += 3;
+			// Destroy(this, 3);
 		}
 		if (other.gameObject.tag == "Boat")
 		{
@@ -89,11 +66,7 @@ public class RockBehavior : MonoBehaviour
 			Destroy(other.gameObject);
 		}
 	}
-	/// <summary>
-	/// Sent each frame where another object is within a trigger collider
-	/// attached to this object (2D physics only).
-	/// </summary>
-	/// <param name="other">The other Collider2D involved in this collision.</param>
+
 	void OnTriggerStay2D(Collider2D other)
 	{
 		if (other.gameObject.tag == "Sea")

@@ -111,7 +111,7 @@ public class SeaBehavior : MonoBehaviour
 		// 	var localCoordinates = transform.InverseTransformPoint(mousePos);
 		// 	CreateWave(localCoordinates);
 		// }
-		maxHeight = 0.2f;
+		maxHeight = 0f;
 		posOfMaxHeight = Vector2.zero;
 		for (int i = 0; i < waves.Count; ++i)
 		{
@@ -129,20 +129,17 @@ public class SeaBehavior : MonoBehaviour
 				maxHeightWave = waves[i];
 			}
 		}
+        if (maxHeight == 0f)
+        {
+            maxHeight = 0.1f;
+        }
 		var size = collider.size;
 		var halfSize = size / 2.0f;
 		size.y = maxHeight;
 		collider.size = size;
-		collider.offset = new Vector2(collider.offset.x, maxHeight / 2);
-	}
-
-	void LateUpdate()
-	{
-		var size = collider.size;
-		// var halfSize = size / 2.0f;
-		size.y = maxHeight;
-		collider.size = size;
-		collider.offset = new Vector2(collider.offset.x, maxHeight / 2);
+        var yOffset = maxHeight / 2;
+        if(yOffset < 0.1f) { yOffset = 0f; }
+        collider.offset = new Vector2(collider.offset.x, yOffset);
 	}
 
 	public float HeightAtX(float x)
