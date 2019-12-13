@@ -6,7 +6,7 @@ public class RockBehavior : MonoBehaviour
 {
     public bool isNegative = false;
 	public new Rigidbody2D rigidbody;
-	private bool hitWater = false;
+	public bool hitWater = false;
 	private Vector2 throwStartPos, throwEndPos;
 	private float throwStartTime, throwEndTime, throwTimeInterval;
 	// Start is called before the first frame Update

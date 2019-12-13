@@ -41,7 +41,7 @@ public class DefaultBoatState : BoatState
 
     public override void Enter()
     {
-        Debug.Log("Humdrumb. Default...");
+        // Debug.Log("Humdrumb. Default...");
     }
 
 	public override void FixedUpdate()
@@ -66,7 +66,7 @@ public class SailingBoatState : BoatState
 
     public override void Enter()
     {
-        Debug.Log("Ahoy! Sailing, Matey!");
+        // Debug.Log("Ahoy! Sailing, Matey!");
     }
 
     public override void CollideSea(SeaBehavior sb)
@@ -98,7 +98,7 @@ public class SurfinBoatState : BoatState
 
 	public override void Enter()
 	{
-		Debug.Log("Surfin Mon!");
+		// Debug.Log("Surfin Mon!");
 	}
 
 	public override void FixedUpdate()

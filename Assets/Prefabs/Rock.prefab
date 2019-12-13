@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 985767241115572516}
   m_Layer: 0
   m_Name: Rock
-  m_TagString: Untagged
+  m_TagString: Rock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,6 +59,7 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -131,4 +132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ccfad0e0951541439529fc50f30aa0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isNegative: 0
   rigidbody: {fileID: 985767241115572522}
+  hitWater: 0
+  throwForce: 0.05
