@@ -16,8 +16,7 @@ public abstract class BoatState
 	public abstract void FixedUpdate();
 	public virtual void CollideSea(SeaBehavior sb)
     {
-		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
-		var waterLevel = sb.transform.position.y + sb.HeightAtX(posRelativeToSea.x);
+        var waterLevel = sb.WorldHeightAtWorldPosition(boatBehavior.transform.position);
         var lower = boatBehavior.transform.position - (Vector3)boatBehavior.halfSize;
 		if (lower.y > waterLevel) { return; }
 		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
@@ -115,7 +114,7 @@ public class SurfinBoatState : BoatState
 			boatBehavior.ExitState();
 			return;
 		}
-		var heightOfWave = seaBehavior.HeightAtX(wave.position.x);
+		var heightOfWave = seaBehavior.LocalHeightAtLocalPosition(wave.position);
 		var newPos = new Vector3(wave.position.x, heightOfWave+boatBehavior.halfSize.y, 0);
 		var relPos = newPos - posRelativeToSea;
         // boatBehavior.rigidbody.velocity = new Vector2(wave.velocity.x, boatBehavior.rigidbody.velocity.y);
