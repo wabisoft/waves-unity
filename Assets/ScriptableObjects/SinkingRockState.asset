@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e1436dd2d6c832408e973a43d797954, type: 3}
   m_Name: SinkingRockState
   m_EditorClassIdentifier: 
-  stateName: 
-  linearDrag: 0
-  angularDrag: 0
-  gravityScale: 0
+  id: 1
+  linearDrag: 6.8
+  angularDrag: 3
+  gravityScale: 0.49
+  throwForce: 0.15

@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e1436dd2d6c832408e973a43d797954, type: 3}
   m_Name: DefaultRockState
   m_EditorClassIdentifier: 
-  stateName: default
+  id: 0
   linearDrag: 0
   angularDrag: 0.54
   gravityScale: 0.75
+  throwForce: 0.44
