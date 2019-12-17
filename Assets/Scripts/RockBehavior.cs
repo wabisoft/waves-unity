@@ -107,14 +107,8 @@ public class RockBehavior : MonoBehaviour
 
 	void Start()
 	{
-		if (rigidbody == null)
-		{
-			rigidbody = GetComponent<Rigidbody2D>();
-		}
-        if(collider == null)
-        {
-            collider = GetComponent<CircleCollider2D>();
-        }
+        rigidbody = rigidbody == null ? GetComponent<Rigidbody2D>() : rigidbody;
+        collider = collider == null ? GetComponent<CircleCollider2D>() : collider;
         EnterState(new DefaultRockState(this));
 	}
 

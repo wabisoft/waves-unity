@@ -196,13 +196,13 @@ public class SeaBehavior : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collider)
     {
         var boat = collider.gameObject.GetComponent<BoatBehavior>();
-        if(boat != null) { boat.CollideSea(this); }
+        boat?.CollideSea(this);
     }
 
     void OnTriggerStay2D(Collider2D collider)
     {
         var boat = collider.gameObject.GetComponent<BoatBehavior>();
-        if(boat != null) { boat.CollideSea(this); }
+        boat?.CollideSea(this);
     }
 
     void OnDrawGizmos()

@@ -1849,6 +1849,11 @@ PrefabInstance:
       propertyPath: isNegative
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 985767241115572516, guid: df0191bab227448f18f0b718927e76d7,
+        type: 3}
+      propertyPath: collider
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 985767241115572520, guid: df0191bab227448f18f0b718927e76d7,
         type: 3}
       propertyPath: m_LocalPosition.x
