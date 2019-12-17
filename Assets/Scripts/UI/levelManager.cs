@@ -5,23 +5,35 @@ using UnityEngine;
 
 public class levelManager : MonoBehaviour
 {
+    private bool winFlag = false;
     public static bool gameIsPaused = false;
     public GameObject pauseMenuUI;
     public GameObject failMenu;
-    public Rigidbody2D leBoat;
-    public Transform leRock;
-
+    public GameObject nextLevelMenu;
+    public GameObject boat;
+    public GameObject rock;
+    boatWinCondition boatWinCondScript;
 
     void Start()
     {
         pauseMenuUI.SetActive(false);
         failMenu.SetActive(false);
+        nextLevelMenu.SetActive(false);
+        boatWinCondScript = boat.GetComponent<boatWinCondition>();
+        winFlag = boatWinCondScript.winFlag;
     }
 
     void Update()
     {
-        // blah
-        if (leRock.position.y < -25 * Camera.main.orthographicSize)
+        winFlag = boatWinCondScript.winFlag; // seems stupid, should only check if it changes
+
+        if (winFlag)
+        {
+            StartCoroutine(showNextLevelMenu(nextLevelMenu.GetComponent<RectTransform>()));
+        }
+
+        // CHANGE TO BE SOMETHING
+        if (rock.transform.position.y < -25 * Camera.main.orthographicSize)
         {
             StartCoroutine(showRetryMenu(failMenu.GetComponent<RectTransform>()));
             //Time.timeScale = 0.0f;
@@ -59,6 +71,26 @@ public class levelManager : MonoBehaviour
         }
         rt.localScale = new Vector3(1f, 1f);
     }
+    private IEnumerator showNextLevelMenu(RectTransform rt)
+    {
+        WaitForSeconds wait = new WaitForSeconds(0.01f);
+        nextLevelMenu.SetActive(true);
+
+        int numSteps = 30;
+        float stepSize = 1f / (float)numSteps;
+        float tt = 0;
+        float easingFunction;
+
+        for (int i = 0; i < numSteps; i++)
+        {
+            easingFunction = Mathf.Pow(tt, 3f);
+            rt.localScale = new Vector3(easingFunction, easingFunction);
+            tt += stepSize;
+            yield return wait;
+        }
+        rt.localScale = new Vector3(1f, 1f);
+    }
+
 
     public void loadALevel(int levelNum)
     {
