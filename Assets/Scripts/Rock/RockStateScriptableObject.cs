@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "RockState", menuName = "ScriptableObjects/RockState", order = 1)]
 public class RockStateScriptableObject : ScriptableObject
 {
-    public string stateName;
+    public RockStateEnum id;
     public float linearDrag;
     public float angularDrag;
     public float gravityScale;

@@ -2,14 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RockStateEnum
+{
+    Default,
+    Sinking,
+}
+
 public abstract class RockState
 {
     public RockState(RockBehavior rb) {
         rockBehavior = rb;
-        values = rb.GetStateValues(Tag);
+        values = rb.GetStateValues(Id);
     }
 
-    public virtual string Tag { get { return "base";  } }
+    public abstract RockStateEnum Id { get; }
 
     protected RockBehavior rockBehavior;
     protected RockStateScriptableObject values;
@@ -26,7 +32,6 @@ public abstract class RockState
     }
 	public virtual void Exit() { }
     public virtual void FixedUpdate() { }
-
     public virtual void OnMouseDown() {
         throwStartTime = Time.time;
         throwStartPosition = Input.mousePosition;
@@ -47,11 +52,7 @@ public abstract class RockState
 
 public class DefaultRockState: RockState
 {
-    public override string Tag { get { return "default";  } }
-
-    // public float linearDrag = 0;
-    // public float angularDrag = 0.54f;
-    // public float gravityScale = 0.54f;
+    public override RockStateEnum Id { get { return RockStateEnum.Default; } }
 
     public DefaultRockState(RockBehavior rb) : base(rb) { }
 
@@ -65,11 +66,8 @@ public class DefaultRockState: RockState
 
 public class SinkingRockState : RockState
 {
-    public override string Tag { get { return "sinking";  } }
+    public override RockStateEnum Id { get { return RockStateEnum.Sinking; } }
 
-    // public float linearDrag = 3f;
-    // public float angularDrag = 3.54f;
-    // public float gravityScale = 0.54f;
     public SeaBehavior seaBehavior;
 
     public SinkingRockState(RockBehavior rb, SeaBehavior sb) : base(rb) {
@@ -91,48 +89,42 @@ public class SinkingRockState : RockState
 
 public class RockBehavior : MonoBehaviour
 {
-    private Dictionary<string, RockStateScriptableObject> stateValuesDictionary = new Dictionary<string, RockStateScriptableObject>();
+    private Dictionary<RockStateEnum, RockStateScriptableObject> stateValuesDictionary = new Dictionary<RockStateEnum, RockStateScriptableObject>();
     public List<RockStateScriptableObject> StateValues;
 
     public bool isNegative = false;
-	public new Rigidbody2D rigidbody;
+    public new Rigidbody2D rigidbody;
     public new CircleCollider2D collider;
-	public bool hitWater = false;
-	private Vector2 throwStartPos, throwEndPos;
-	private float throwStartTime, throwEndTime, throwTimeInterval;
-	[Range(0.05f, 1f)]
-	public float throwForce = 0.05f;
-    public string stateTag = "";
-
     private Stack<RockState> states_ = new Stack<RockState>();
+    public RockState CurrentState { get { return states_.Peek(); } }
+    public string CurrentStateName { get { return CurrentState.Id.ToString(); }}
 
 	public void EnterState(RockState state)
 	{
         if (states_.Count > 0)
         {
-            states_.Peek().Exit();
+            CurrentState.Exit();
         }
 		state.Enter();
 		states_.Push(state);
-        stateTag = state.Tag;
 	}
 
 	public void ExitState()
 	{
 		states_.Pop().Exit();
         states_.Peek().Enter();
-        stateTag = states_.Peek().Tag;
 	}
-    public RockStateScriptableObject GetStateValues(string name)
+
+    public RockStateScriptableObject GetStateValues(RockStateEnum id)
     {
-        return stateValuesDictionary.TryGetValue(name, out RockStateScriptableObject value) ? value : null;
+        return stateValuesDictionary.TryGetValue(id, out RockStateScriptableObject value) ? value : null;
     }
 
     void Awake()
     {
         foreach(var stateValue in StateValues)
         {
-            stateValuesDictionary[stateValue.stateName] = stateValue;
+            stateValuesDictionary[stateValue.id] = stateValue;
         }
     }
 
@@ -146,17 +138,17 @@ public class RockBehavior : MonoBehaviour
 
 	void FixedUpdate()
 	{
-        states_.Peek().FixedUpdate();
+        CurrentState.FixedUpdate();
     }
 
 	void OnMouseDown()
 	{
-        states_.Peek().OnMouseDown();
+        CurrentState.OnMouseDown();
 	}
 
 	void OnMouseUp()
 	{
-        states_.Peek().OnMouseUp();	
+        CurrentState.OnMouseUp();	
 	}
 
     public Vector3 Lower()
@@ -169,14 +161,14 @@ public class RockBehavior : MonoBehaviour
         var waterLevel = seaBehavior.WorldHeightAtWorldPosition(transform.position);
         if(Lower().y > waterLevel) { return; }
         // else if( rigidbody.velocity.magnitude <= 0.001) { return; } // not really moving
-        states_.Peek().CollideSea(seaBehavior);
+        CurrentState.CollideSea(seaBehavior);
     }
 
     public void UnCollideSea(SeaBehavior seaBehavior)
     {
         var waterLevel = seaBehavior.WorldHeightAtWorldPosition(transform.position);
         if(Lower().y < waterLevel) { return; }
-        states_.Peek().UnCollideSea(seaBehavior);
+        CurrentState.UnCollideSea(seaBehavior);
     }
 
 	void OnTriggerEnter2D(Collider2D other)
