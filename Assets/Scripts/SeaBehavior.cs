@@ -92,26 +92,26 @@ public class SeaBehavior : MonoBehaviour
 {
 	public List<Wave> waves = new List<Wave>();
 	public new BoxCollider2D collider;
-	private float maxHeight;
+	private float maxWaveHeight;
 	public Vector2 posOfMaxHeight = Vector2.zero;
 	public Wave maxHeightWave;
 	public float WaveWidth = 0.55f;
 	public float growFactor = 1;
 	public float decayFactor = -0.25f;
+    private Vector3 floorPosition;
 
 	void Start()
 	{
+        var floor = GameObject.FindGameObjectWithTag("Floor");
+        Debug.Assert(floor != null);
+        floorPosition = floor.transform.position;
+        Debug.Assert(transform.position.y > floorPosition.y);
 	}
 
 	void Update()
 	{
-		// if (Input.GetMouseButtonDown(0))
-		// {
-		// 	var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		// 	var localCoordinates = transform.InverseTransformPoint(mousePos);
-		// 	CreateWave(localCoordinates);
-		// }
-		maxHeight = 0f;
+
+		maxWaveHeight = 0f;
 		posOfMaxHeight = Vector2.zero;
 		for (int i = 0; i < waves.Count; ++i)
 		{
@@ -121,35 +121,51 @@ public class SeaBehavior : MonoBehaviour
 				waves.RemoveAt(i);
 				continue;
 			}
-			var heightAtWavePos = HeightAtX(waves[i].position.x);
-			if (maxHeight < heightAtWavePos)
+			var heightAtWavePos = LocalHeightAtLocalPosition(waves[i].position);
+
+			if (maxWaveHeight < heightAtWavePos)
 			{
-				maxHeight = heightAtWavePos;
+				maxWaveHeight = heightAtWavePos;
 				posOfMaxHeight = waves[i].position;
 				maxHeightWave = waves[i];
 			}
 		}
-        if (maxHeight == 0f)
+        var waveOffset = maxWaveHeight / 2;
+        if (maxWaveHeight == 0f)
         {
-            maxHeight = 0.1f;
+            maxWaveHeight = 0.1f;
         }
+        var defaultHeight = (transform.position - floorPosition).y;
+        var defaultOffset = - defaultHeight / 2;
 		var size = collider.size;
-		var halfSize = size / 2.0f;
-		size.y = maxHeight;
+		size.y = defaultHeight + maxWaveHeight;
 		collider.size = size;
-        var yOffset = maxHeight / 2;
-        if(yOffset < 0.1f) { yOffset = 0f; }
+        var yOffset = defaultOffset + waveOffset;
         collider.offset = new Vector2(collider.offset.x, yOffset);
 	}
 
-	public float HeightAtX(float x)
-	{
-		float height = 0f;
+    public float LocalHeightAtLocalPosition (Vector3 position) {
+        float height = 0f;
 		foreach (var wave in waves)
 		{
-			height += wave.HeightAtX(x);
+			height += wave.HeightAtX(position.x);
 		}
 		return height;
+    }
+
+    public float LocalHeightAtWorldPosition(Vector3 position)
+    {
+        return LocalHeightAtLocalPosition(transform.InverseTransformPoint(position));
+    }
+
+    public float WorldHeightAtLocalPosition (Vector3 position)
+    {
+        return transform.position.y + LocalHeightAtLocalPosition(position);
+    }
+
+	public float WorldHeightAtWorldPosition(Vector3 position)
+	{
+        return WorldHeightAtLocalPosition(transform.InverseTransformPoint(position));
 	}
 
 	public float SlopeAtX(float x)
@@ -180,18 +196,15 @@ public class SeaBehavior : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collider)
     {
         var boat = collider.gameObject.GetComponent<BoatBehavior>();
-        if(boat != null) { boat.CollideSea(this); }
+        boat?.CollideSea(this);
     }
 
     void OnTriggerStay2D(Collider2D collider)
     {
         var boat = collider.gameObject.GetComponent<BoatBehavior>();
-        if(boat != null) { boat.CollideSea(this); }
+        boat?.CollideSea(this);
     }
 
-    /// <summary>
-    /// Callback to draw gizmos that are pickable and always drawn.
-    /// </summary>
     void OnDrawGizmos()
 	{
 		var halfSize = collider.size / 2;
@@ -199,8 +212,8 @@ public class SeaBehavior : MonoBehaviour
 		for (float i = -halfSize.x; i < halfSize.x - step; i += step)
 		{
 			Gizmos.color = Color.blue;
-			var p = transform.TransformPoint(new Vector3(i, HeightAtX(i), 0));
-			var q = transform.TransformPoint(new Vector3(i + step, HeightAtX(i + step)));
+			var p = transform.TransformPoint(new Vector3(i, LocalHeightAtLocalPosition(new Vector3(i, 0, 0)), 0));
+			var q = transform.TransformPoint(new Vector3(i + step, LocalHeightAtLocalPosition(new Vector3(i + step, 0, 0))));
 			Gizmos.DrawLine(p, q);
 		}
 	}

@@ -7,6 +7,8 @@ TagManager:
   - Sea
   - Boat
   - RestartButton
+  - Rock
+  - Floor
   layers:
   - Default
   - TransparentFX
