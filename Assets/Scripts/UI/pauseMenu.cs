@@ -8,8 +8,8 @@ public class pauseMenu : MonoBehaviour
 
     public GameObject pauseMenuUI;
     public GameObject failMenu;
-    public Rigidbody2D leBoat;
-    public Transform leRock;
+    public Rigidbody2D boat;
+    public Transform rock;
 
     void Start()
     {
@@ -20,7 +20,7 @@ public class pauseMenu : MonoBehaviour
     void Update()
     {
         // quick and dirty check
-        if (leRock.position.y < -10f * Camera.main.orthographicSize && Mathf.Abs(leBoat.velocity.x) < 0.01)
+        if (rock.position.y < -10f * Camera.main.orthographicSize && Mathf.Abs(boat.velocity.x) < 0.01)
         {
             failMenu.SetActive(true);
             //Time.timeScale = 0.0f;
