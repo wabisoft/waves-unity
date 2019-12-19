@@ -18,35 +18,36 @@ public abstract class BoatState
     {
         var waterLevel = sb.WorldHeightAtWorldPosition(boatBehavior.transform.position);
         var lower = boatBehavior.transform.position - (Vector3)boatBehavior.halfSize;
-		if (lower.y > waterLevel) { return; }
-		var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
-		var w = boatBehavior.collider.size.x;
-		var displacedWater = h * w;
-		var rigidbody = boatBehavior.rigidbody;
-		if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
-		{
-			var waterFluidDensity = 50f;
-			var bouyancy = displacedWater * waterFluidDensity * -Physics2D.gravity * Time.deltaTime;
-			rigidbody.AddForce(bouyancy, ForceMode2D.Impulse);
-			rigidbody.velocity *= 0.75f;
-		}
+        if (lower.y > waterLevel) { return; }
+        var h = Mathf.Min(waterLevel - lower.y, boatBehavior.collider.size.y);
+        var w = boatBehavior.collider.size.x;
+        var displacedWater = h * w;
+        var rigidbody = boatBehavior.rigidbody;
+        if (Vector3.Dot(rigidbody.velocity, Vector3.up) != 0)
+        {
+            var waterFluidDensity = 50f;
+            var bouyancy = displacedWater * waterFluidDensity * -Physics2D.gravity * Time.deltaTime;
+            rigidbody.AddForce(bouyancy, ForceMode2D.Impulse);
+            rigidbody.velocity *= 0.75f;
+        }
     }
+
 }
 
 
 public class DefaultBoatState : BoatState
 {
-	public DefaultBoatState(BoatBehavior bb) : base(bb) { }
+    public DefaultBoatState(BoatBehavior bb) : base(bb) { }
 
     public override void Enter()
     {
         // Debug.Log("Humdrumb. Default...");
     }
 
-	public override void FixedUpdate()
-	{
-		// Do nothing extra?
-	}
+    public override void FixedUpdate()
+    {
+        // Do nothing extra?
+    }
 
     public override void CollideSea(SeaBehavior sb)
     {
@@ -59,7 +60,8 @@ public class SailingBoatState : BoatState
 {
     public SeaBehavior seaBehavior;
 
-    public SailingBoatState(BoatBehavior bb, SeaBehavior sb): base(bb) {
+    public SailingBoatState(BoatBehavior bb, SeaBehavior sb) : base(bb)
+    {
         seaBehavior = sb;
     }
 
@@ -71,7 +73,7 @@ public class SailingBoatState : BoatState
     public override void CollideSea(SeaBehavior sb)
     {
         base.CollideSea(sb);
-		var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
+        var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
         var seaVel = sb.VelocityAtX(posRelativeToSea.x);
         boatBehavior.rigidbody.velocity += seaVel;
         var distFromMax = Mathf.Abs(posRelativeToSea.x - sb.posOfMaxHeight.x);
@@ -119,60 +121,76 @@ public class SurfinBoatState : BoatState
 		var relPos = newPos - posRelativeToSea;
         // boatBehavior.rigidbody.velocity = new Vector2(wave.velocity.x, boatBehavior.rigidbody.velocity.y);
         boatBehavior.rigidbody.MovePosition(boatBehavior.transform.position + relPos);
-	}
+    }
 
-	public override void CollideSea(SeaBehavior sb)
-	{
+    public override void CollideSea(SeaBehavior sb)
+    {
         base.CollideSea(sb);
         var posRelativeToSea = sb.transform.InverseTransformPoint(boatBehavior.transform.position);
-		var seaVel = sb.VelocityAtX(posRelativeToSea.x);
-		boatBehavior.rigidbody.velocity += seaVel * 5;
-	}
+        var seaVel = sb.VelocityAtX(posRelativeToSea.x);
+        boatBehavior.rigidbody.velocity += seaVel * 5;
+    }
 }
 
 public class BoatBehavior : MonoBehaviour
 {
-	public new BoxCollider2D collider;
-	public new Rigidbody2D rigidbody;
+    public new BoxCollider2D collider;
+    public new Rigidbody2D rigidbody;
+    [HideInInspector]
     public Vector2 size;
+    [HideInInspector]
     public Vector2 halfSize;
+    public GameObject winPlatform;
+    public Vector2 winThreshold;
+    private bool winFlag;
+    public bool Won { get { return winFlag; } }
 
-	public Stack<BoatState> states = new Stack<BoatState>();
+    public Stack<BoatState> states = new Stack<BoatState>();
 
-	public void EnterState(BoatState boatState)
-	{
+    public void EnterState(BoatState boatState)
+    {
         if (states.Count > 0)
         {
             states.Peek().Exit();
         }
-		boatState.Enter();
-		states.Push(boatState);
-	}
+        boatState.Enter();
+        states.Push(boatState);
+    }
 
-	public void ExitState()
-	{
-		states.Pop().Exit();
+    public void ExitState()
+    {
+        states.Pop().Exit();
         states.Peek().Enter();
-	}
+    }
 
-	// Start is called before the first frame Update
-	void Start()
-	{
-		collider = GetComponent<BoxCollider2D>();
-		rigidbody = GetComponent<Rigidbody2D>();
-		EnterState(new DefaultBoatState(this));
+    public void CollideSea(SeaBehavior sb)
+    {
+        if (sb == null) { return; }
+        states.Peek().CollideSea(sb);
+    }
+
+    // Start is called before the first frame Update
+    void Start()
+    {
+        collider = GetComponent<BoxCollider2D>();
+        rigidbody = GetComponent<Rigidbody2D>();
+        EnterState(new DefaultBoatState(this));
         size = collider.size * transform.localScale;
         halfSize = size / 2;
     }
 
-	void FixedUpdate()
-	{
-		states.Peek().FixedUpdate();
-	}
+    void FixedUpdate()
+    {
+        states.Peek().FixedUpdate();
+    }
 
-    public void CollideSea(SeaBehavior sb)
-	{
-        if(sb == null) { return; }
-        states.Peek().CollideSea(sb);
-	}
+    public void CollidePlatform(PlatformBehavior pb) {
+        var relpos = pb.transform.position - transform.position;
+        if(Mathf.Abs(relpos.x) <= winThreshold.x && Mathf.Abs(relpos.y) <= winThreshold.y && pb.gameObject.GetInstanceID() == winPlatform.gameObject.GetInstanceID())
+        {
+            winFlag = true;
+        }
+    }
+
+    public void UnCollidePlatform(PlatformBehavior pb) {}
 }
