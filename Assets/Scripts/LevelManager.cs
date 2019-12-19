@@ -5,31 +5,35 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    private bool winFlag = false;
     public static bool gameIsPaused = false;
     public GameObject pauseMenuUI;
     public GameObject failMenu;
     public GameObject nextLevelMenu;
-    public GameObject boat;
     public GameObject rock;
-    BoatWinCondition boatWinCondScript;
+    public BoatBehavior boat;
+    public int framesToWin = 10;
+    public int winCounter = 0;
 
     void Start()
     {
         pauseMenuUI.SetActive(false);
         failMenu.SetActive(false);
         nextLevelMenu.SetActive(false);
-        boatWinCondScript = boat.GetComponent<BoatWinCondition>();
-        winFlag = boatWinCondScript.winFlag;
     }
 
     void Update()
     {
-        winFlag = boatWinCondScript.winFlag; // seems stupid, should only check if it changes
 
-        if (winFlag)
+        if (boat.Won)
         {
-            StartCoroutine(showNextLevelMenu(nextLevelMenu.GetComponent<RectTransform>()));
+            winCounter++;
+            if (winCounter > framesToWin)
+            {
+                StartCoroutine(showNextLevelMenu(nextLevelMenu.GetComponent<RectTransform>()));
+            }
+        } else
+        {
+            winCounter = 0;
         }
 
         // CHANGE TO BE SOMETHING
