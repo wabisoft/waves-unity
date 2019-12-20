@@ -9,7 +9,7 @@ public class LevelManager : MonoBehaviour
     public GameObject pauseMenuUI;
     public GameObject failMenu;
     public GameObject nextLevelMenu;
-    public GameObject rock;
+    public RockManager rockManager;
     public BoatBehavior boat;
     public int framesToWin = 10;
     public int winCounter = 0;
@@ -36,13 +36,10 @@ public class LevelManager : MonoBehaviour
             winCounter = 0;
         }
 
-        // CHANGE TO BE SOMETHING
-        if (rock.transform.position.y < -25 * Camera.main.orthographicSize)
-        {
+        if (rockManager.allHitWater) {
             StartCoroutine(showRetryMenu(failMenu.GetComponent<RectTransform>()));
-            //Time.timeScale = 0.0f;
         }
-
+       
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (gameIsPaused)
@@ -96,7 +93,7 @@ public class LevelManager : MonoBehaviour
     }
 
 
-    public void loadALevel(int levelNum)
+    public void LoadALevel(int levelNum)
     {
         SceneManager.LoadScene(levelNum);
     }
