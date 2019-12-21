@@ -5,7 +5,7 @@ using UnityEngine;
 public class RockManager : MonoBehaviour
 {
     public RockBehavior[] rocks;
-    public bool allHitWater = false;
+    public bool allSunk = false;
 
     void Awake()
     {
@@ -15,12 +15,11 @@ public class RockManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool allHitWater_ = true;
+        allSunk = true;
         foreach(var rock in rocks)
         {
             Debug.Assert(rock != null);
-            allHitWater_ &= rock.CurrentState.Id == RockStateEnum.Sinking;
+            allSunk &= rock.CurrentState.Id == RockStateEnum.Sunk;
         }
-        if(allHitWater_) { allHitWater = allHitWater_; }
     }
 }

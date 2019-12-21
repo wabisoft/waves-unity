@@ -29,6 +29,7 @@ public class LevelManager : MonoBehaviour
             winCounter++;
             if (winCounter > framesToWin)
             {
+                // TODO: Only call once
                 StartCoroutine(showNextLevelMenu(nextLevelMenu.GetComponent<RectTransform>()));
             }
         } else
@@ -36,7 +37,8 @@ public class LevelManager : MonoBehaviour
             winCounter = 0;
         }
 
-        if (rockManager.allHitWater) {
+        if (rockManager.allSunk && boat.CurrentState.Id != BoatStateEnum.Surfing && winCounter == 0 && !boat.Won) {
+            // TODO: Only call once
             StartCoroutine(showRetryMenu(failMenu.GetComponent<RectTransform>()));
         }
        

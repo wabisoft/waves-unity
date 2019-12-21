@@ -135,9 +135,7 @@ MonoBehaviour:
   StateValues:
   - {fileID: 11400000, guid: b90ac5e7df3ba7147a9220374e94442c, type: 2}
   - {fileID: 11400000, guid: 232e411c6a0bce1459131ee0539a764a, type: 2}
+  - {fileID: 11400000, guid: 76168c671199cae48a0621c84ec99b3b, type: 2}
   isNegative: 0
   rigidbody: {fileID: 985767241115572522}
   collider: {fileID: 985767241115572523}
-  hitWater: 0
-  throwForce: 0.47
-  stateTag: 
