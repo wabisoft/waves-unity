@@ -867,7 +867,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rocks: []
-  allHitWater: 0
+  allSunk: 0
 --- !u!4 &612051840
 Transform:
   m_ObjectHideFlags: 0
@@ -1093,7 +1093,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 41.15
+  m_fontSize: 41.2
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1372,7 +1372,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 41.15
+  m_fontSize: 41.2
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1860,6 +1860,12 @@ PrefabInstance:
       propertyPath: collider
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 985767241115572516, guid: df0191bab227448f18f0b718927e76d7,
+        type: 3}
+      propertyPath: blah
+      value: 
+      objectReference: {fileID: 11400000, guid: b90ac5e7df3ba7147a9220374e94442c,
+        type: 2}
     - target: {fileID: 985767241115572520, guid: df0191bab227448f18f0b718927e76d7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2261,7 +2267,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 41.15
+  m_fontSize: 41.2
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2588,6 +2594,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Sea
+      objectReference: {fileID: 0}
+    - target: {fileID: 7063914053976669770, guid: e7ea269078303411bb8f6fe828abb8cd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7063914053976669771, guid: e7ea269078303411bb8f6fe828abb8cd,
         type: 3}

@@ -16,4 +16,4 @@ MonoBehaviour:
   linearDrag: 0
   angularDrag: 0.54
   gravityScale: 0.75
-  throwForce: 0.44
+  throwForce: 0.41

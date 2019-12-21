@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SinkingRockState
   m_EditorClassIdentifier: 
   id: 1
-  linearDrag: 6.8
+  linearDrag: 8.53
   angularDrag: 3
   gravityScale: 0.49
   throwForce: 0.15
