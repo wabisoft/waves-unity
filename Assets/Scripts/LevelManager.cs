@@ -13,6 +13,8 @@ public class LevelManager : MonoBehaviour
     public BoatBehavior boat;
     public int framesToWin = 10;
     public int winCounter = 0;
+    public int framesToLoose = 15;
+    public int looseCounter = 0;
 
     void Start()
     {
@@ -26,10 +28,12 @@ public class LevelManager : MonoBehaviour
 
         if (boat.Won)
         {
-            winCounter++;
-            if (winCounter > framesToWin)
+            if (winCounter < framesToWin)
             {
-                // TODO: Only call once
+                winCounter++;
+            }
+            if (winCounter == framesToWin) // checking exactly equals makes sure this coroutine is called just once
+            {
                 StartCoroutine(showNextLevelMenu(nextLevelMenu.GetComponent<RectTransform>()));
             }
         } else
@@ -38,8 +42,17 @@ public class LevelManager : MonoBehaviour
         }
 
         if (rockManager.allSunk && boat.CurrentState.Id != BoatStateEnum.Surfing && winCounter == 0 && !boat.Won) {
-            // TODO: Only call once
-            StartCoroutine(showRetryMenu(failMenu.GetComponent<RectTransform>()));
+            if (looseCounter < framesToLoose)
+            {
+                looseCounter++;
+            }
+            if(looseCounter == framesToLoose) // checking exactly equals makes sure this coroutine is called just once
+            {
+                StartCoroutine(showRetryMenu(failMenu.GetComponent<RectTransform>()));
+            }
+        } else
+        {
+            looseCounter = 0;
         }
        
         if (Input.GetKeyDown(KeyCode.Space))
