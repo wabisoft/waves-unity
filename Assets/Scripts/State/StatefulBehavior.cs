@@ -47,6 +47,7 @@ public abstract class StatefulBehavior<TEnum, TScriptableObject> :
         states_.Pop().Exit();
         if(states_.Count == 0) { return; }
         states_.Peek()?.Enter();
+        CurrentStateName = CurrentState.Id.ToString();
     }
 
     public virtual void Awake()

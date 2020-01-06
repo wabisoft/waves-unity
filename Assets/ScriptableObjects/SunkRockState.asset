@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e1436dd2d6c832408e973a43d797954, type: 3}
   m_Name: SunkRockState
   m_EditorClassIdentifier: 
-  id: 2
+  id: 3
   linearDrag: 100
   angularDrag: 100
   gravityScale: 1

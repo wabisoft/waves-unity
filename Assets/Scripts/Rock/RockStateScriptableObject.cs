@@ -8,6 +8,4 @@ public class RockStateScriptableObject : StateScriptableObject<RockStateEnum>
     public float linearDrag;
     public float angularDrag;
     public float gravityScale;
-    [Range(0.05f, 1)]
-    public float throwForce;
 }

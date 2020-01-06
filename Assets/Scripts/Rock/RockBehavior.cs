@@ -9,7 +9,7 @@ public class RockBehavior : StatefulBehavior<RockStateEnum, RockStateScriptableO
     public new Rigidbody2D rigidbody;
     public new CircleCollider2D collider;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0029:Use coalesce expression", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0029:Use coalesce expression", Justification = "No supported? Or otherwise not behaving as expected")]
     void Start()
 	{
         rigidbody = rigidbody == null ? GetComponent<Rigidbody2D>() : rigidbody;

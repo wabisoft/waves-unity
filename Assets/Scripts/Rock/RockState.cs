@@ -5,6 +5,7 @@ using UnityEngine;
 public enum RockStateEnum
 {
     Default,
+    Caught,
     Sinking,
     Sunk
 }
@@ -13,33 +14,12 @@ public abstract class RockState : State<RockStateEnum, RockBehavior, RockStateSc
 {
     public RockState(RockBehavior rb) : base(rb) { }
 
-    protected float throwStartTime;
-    protected float throwEndTime;
-    protected Vector2 throwStartPosition;
-    protected Vector2 throwEndPosition;
-
-
     public override void Enter() {
         base.Enter();
         behavior.rigidbody.drag = so.linearDrag;
         behavior.rigidbody.angularDrag = so.angularDrag;
         behavior.rigidbody.gravityScale = so.gravityScale;
     }
-    public override void OnMouseDown() {
-        base.OnMouseDown();
-        throwStartTime = Time.time;
-        throwStartPosition = Input.mousePosition;
-    }
-
-    public override void OnMouseUp() {
-        base.OnMouseUp();
-        throwEndTime = Time.time;
-		var throwTimeInterval = throwEndTime - throwStartTime;
-		throwEndPosition = Input.mousePosition;
-		var direction = throwEndPosition - throwStartPosition;
-		behavior.rigidbody.AddForce((direction / throwTimeInterval) * so.throwForce);
-    }
-
 
     public virtual void CollideSea(SeaBehavior sb) { }
     public virtual void UnCollideSea(SeaBehavior sb) { }
@@ -48,15 +28,63 @@ public abstract class RockState : State<RockStateEnum, RockBehavior, RockStateSc
 
 public class DefaultRockState: RockState
 {
+
     public override RockStateEnum Id { get { return RockStateEnum.Default; } }
 
-    public DefaultRockState(RockBehavior rb) : base(rb) { }
+    public DefaultRockState(RockBehavior rb) : base(rb) {
+    }
 
+    public override void OnMouseDown()
+    {
+        behavior.EnterState(new CaughtRockState(behavior));
+    }
     public override void CollideSea(SeaBehavior seaBehavior)
     {
         seaBehavior.CreateWave(seaBehavior.transform.InverseTransformPoint(behavior.transform.position),
             behavior.rigidbody.velocity.magnitude, (int)Mathf.Sign(behavior.rigidbody.velocity.x), (behavior.isNegative)? -1 : 1);
         behavior.EnterState(new SinkingRockState(behavior, seaBehavior));
+    }
+}
+
+public class CaughtRockState : RockState
+{
+    public int numFrames = 0;
+    public int maxFrames = 10;
+    public TargetJoint2D joint;
+
+    public override RockStateEnum Id { get { return RockStateEnum.Caught;  } }
+
+    public CaughtRockState(RockBehavior rb) : base(rb) {
+        joint = rb.GetComponent<TargetJoint2D>();
+    }
+
+    public override void Enter()
+    {
+        joint.enabled = true;
+    }
+
+    public override void Exit()
+    {
+        joint.enabled = false;
+    }
+
+    public override void Update()
+    {
+        if(numFrames >= maxFrames)
+        {
+            behavior.ExitState();
+        }
+        numFrames++;
+    }
+
+    public override void OnMouseDrag()
+    {
+        joint.target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    public override void OnMouseUp()
+    {
+        behavior.ExitState();
     }
 }
 
