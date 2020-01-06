@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5424377239973720774}
   - component: {fileID: 985767241115572522}
   - component: {fileID: 985767241115572516}
+  - component: {fileID: 8240478369216424249}
   m_Layer: 0
   m_Name: Rock
   m_TagString: Rock
@@ -158,3 +159,22 @@ MonoBehaviour:
   isNegative: 0
   rigidbody: {fileID: 985767241115572522}
   collider: {fileID: 985767241115572523}
+--- !u!257 &8240478369216424249
+TargetJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 985767241115572527}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_Anchor: {x: 0, y: 0}
+  m_Target: {x: -5.11, y: 0.03}
+  m_AutoConfigureTarget: 1
+  m_MaxForce: 10000
+  m_DampingRatio: 1
+  m_Frequency: 5
