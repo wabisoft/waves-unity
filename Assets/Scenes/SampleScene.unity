@@ -1201,6 +1201,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &959336775 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 985767241115572527, guid: df0191bab227448f18f0b718927e76d7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1664292520}
+  m_PrefabAsset: {fileID: 0}
+--- !u!257 &959336782
+TargetJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959336775}
+  m_Enabled: 0
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_Anchor: {x: 0, y: 0}
+  m_Target: {x: -7.1, y: 1.6299999}
+  m_AutoConfigureTarget: 0
+  m_MaxForce: 10000
+  m_DampingRatio: 1
+  m_Frequency: 5
 --- !u!1 &1006023798
 GameObject:
   m_ObjectHideFlags: 0
